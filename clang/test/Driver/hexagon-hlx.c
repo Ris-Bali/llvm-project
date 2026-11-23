@@ -35,6 +35,10 @@
 // RUN:  -fno-integrated-as 2>&1 | FileCheck -check-prefix=CHECK-AS-LAST-HLX %s
 // RUN: %clang -c %s -### --target=hexagon-unknown-elf -mv85 -mhlx -mno-hlx \
 // RUN:  -fno-integrated-as 2>&1 | FileCheck -check-prefix=CHECK-AS-LAST-NOHLX %s
+// RUN: %clang -c %s -### --target=hexagon-unknown-elf -mv85 -mhlx -mhlx \
+// RUN:  -fno-integrated-as 2>&1 | FileCheck -check-prefix=CHECK-AS-LAST-HLX %s
+// RUN: %clang -c %s -### --target=hexagon-unknown-elf -mv85 -mno-hlx -mno-hlx \
+// RUN:  -fno-integrated-as 2>&1 | FileCheck -check-prefix=CHECK-AS-LAST-NOHLX %s
 
 // CHECK-HLX-ON: "-target-feature" "+hlx"
 // CHECK-HLX-OFF: "-target-feature" "-hlx"
@@ -46,9 +50,11 @@
 // CHECK-AS-HLX-NOT: "-mhlx"
 // CHECK-AS-NOHLX: llvm-mc{{.*}}"-mattr={{[^"]*}}-hlx{{[^"]*}}"
 // CHECK-AS-NOHLX-NOT: "-mhlx"
-// CHECK-AS-LAST-HLX: llvm-mc{{.*}}"-mattr={{[^"]*}}-hlx,+hlx{{[^"]*}}"
+// CHECK-AS-LAST-HLX: llvm-mc{{.*}}"-mattr=+hlx,
+// CHECK-AS-LAST-HLX-NOT: {{[+-]}}hlx{{[,"]}}
 // CHECK-AS-LAST-HLX-NOT: "-mhlx"
-// CHECK-AS-LAST-NOHLX: llvm-mc{{.*}}"-mattr={{[^"]*}}+hlx,-hlx{{[^"]*}}"
+// CHECK-AS-LAST-NOHLX: llvm-mc{{.*}}"-mattr=-hlx,
+// CHECK-AS-LAST-NOHLX-NOT: {{[+-]}}hlx{{[,"]}}
 // CHECK-AS-LAST-NOHLX-NOT: "-mhlx"
 // CHECK-HLX-V79: error: unsupported option '-mhlx' for target 'v79'
 // CHECK-NOHLX-V79: error: unsupported option '-mno-hlx' for target 'v79'
